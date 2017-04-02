@@ -1,0 +1,14 @@
+#!/bin/bash
+
+POOL="set-me"
+DS="set-me
+set-me
+set-me"
+
+HOURTODAY=$(date +%m%d%H)
+HOURYESTERDAY=$(date +%m%d%H --date=-24hours)
+
+for SET in $DS ; do
+        zfs snapshot "$POOL"/"$SET"@hourly-"$HOURTODAY"
+        zfs destroy "$POOL"/"$SET"@hourly-"$HOURYESTERDAY"
+done

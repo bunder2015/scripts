@@ -1,0 +1,46 @@
+#!/bin/bash
+
+POOL="set-me"
+DS="set-me
+set-me
+set-me"
+
+HOSTNAME=$(hostname)
+# LOCALPOOL="set-me"
+REMOTEHOST="set-me"
+REMOTEPOOL="set-me"
+
+DAYOFWEEK=$(date +%u)
+TODAY=$(date +%m%d)
+LASTWEEKDAY=$(date +%m%d --date=-7days)
+LASTWEEKWEEK=$(date +%U --date=-1week)
+TWOWEEKSAGO=$(date +%U --date=-2weeks)
+# SEVENWEEKSAGO=$(date +%U --date=-7weeks)
+
+for SET in $DS ; do
+        if [ "$DAYOFWEEK" -eq 7 ] ; then
+                zfs rename "$POOL"/"$SET"@daily-"$LASTWEEKDAY" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK"
+
+                for i in {8..13} ; do
+                        zfs destroy "$POOL"/"$SET"@daily-"$(date +%m%d --date=-"${i}"days)"
+                done
+        fi
+
+        zfs snapshot "$POOL"/"$SET"@daily-"$TODAY"
+done
+
+## This second loop may seem redundant, but it ensures all snapshots have been created before offloading
+for SET in $DS ; do
+        if [ "$DAYOFWEEK" -eq 7 ] ; then
+                ## Now that all the snapshots have been created, we can think about offloading them to another pool/server
+                # zfs send -i "$POOL"/"$SET"#weekly-"$TWOWEEKSAGO" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" "$LOCALPOOL"/backups/"$HOSTNAME"/"$SET"
+                ## OR
+                zfs send -i "$POOL"/"$SET"#weekly-"$TWOWEEKSAGO" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" | ssh -Cq "$REMOTEHOST" zfs receive "$REMOTEPOOL"/backups/"$HOSTNAME"/"$SET"
+
+                zfs bookmark "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" "$POOL"/"$SET"#weekly-"$LASTWEEKWEEK"
+                zfs destroy "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK"
+        fi
+done
+
+## TODO: clean up offloaded snapshots
+## TODO: clean up bookmarks
