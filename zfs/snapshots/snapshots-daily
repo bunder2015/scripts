@@ -17,21 +17,21 @@ LASTWEEKWEEK=$(date +%U --date=-1week)
 TWOWEEKSAGO=$(date +%U --date=-2weeks)
 # SEVENWEEKSAGO=$(date +%U --date=-7weeks)
 
+## Snapshot all the datasets first before anything to ensure the snapshots get created as close to each other as possible
 for SET in $DS ; do
-        if [ "$DAYOFWEEK" -eq 7 ] ; then
-                zfs rename "$POOL"/"$SET"@daily-"$LASTWEEKDAY" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK"
-
-                for i in {8..13} ; do
-                        zfs destroy "$POOL"/"$SET"@daily-"$(date +%m%d --date=-"${i}"days)"
-                done
-        fi
-
         zfs snapshot "$POOL"/"$SET"@daily-"$TODAY"
 done
 
 ## This second loop may seem redundant, but it ensures all snapshots have been created before offloading
 for SET in $DS ; do
         if [ "$DAYOFWEEK" -eq 7 ] ; then
+		## Get last week's snapshots ready for offloading
+                zfs rename "$POOL"/"$SET"@daily-"$LASTWEEKDAY" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK"
+
+                for i in {8..13} ; do
+                        zfs destroy "$POOL"/"$SET"@daily-"$(date +%m%d --date=-"${i}"days)"
+                done
+
                 ## Now that all the snapshots have been created, we can think about offloading them to another pool/server
                 # zfs send -i "$POOL"/"$SET"\#weekly-"$TWOWEEKSAGO" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" | zfs receive "$LOCALPOOL"/backups/"$HOSTNAME"/"$SET"
                 ## OR
@@ -46,3 +46,5 @@ for SET in $DS ; do
 done
 
 ## TODO: clean up offloaded snapshots
+## TODO: compressed send instead of relying on ssh compression
+## TODO: resumable send/recv?
