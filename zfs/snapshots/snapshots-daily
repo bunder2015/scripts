@@ -33,14 +33,16 @@ done
 for SET in $DS ; do
         if [ "$DAYOFWEEK" -eq 7 ] ; then
                 ## Now that all the snapshots have been created, we can think about offloading them to another pool/server
-                # zfs send -i "$POOL"/"$SET"\#weekly-"$TWOWEEKSAGO" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" "$LOCALPOOL"/backups/"$HOSTNAME"/"$SET"
+                # zfs send -i "$POOL"/"$SET"\#weekly-"$TWOWEEKSAGO" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" | zfs receive "$LOCALPOOL"/backups/"$HOSTNAME"/"$SET"
                 ## OR
                 zfs send -i "$POOL"/"$SET"\#weekly-"$TWOWEEKSAGO" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" | ssh -Cq "$REMOTEHOST" zfs receive "$REMOTEPOOL"/backups/"$HOSTNAME"/"$SET"
 
-                zfs bookmark "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" "$POOL"/"$SET"\#weekly-"$LASTWEEKWEEK"
-                zfs destroy "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK"
+		if [ $? -eq 0 ] ; then
+	                zfs bookmark "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" "$POOL"/"$SET"\#weekly-"$LASTWEEKWEEK"
+        	        zfs destroy "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK"
+			zfs destroy "$POOL"/"$SET"\#weekly-"$TWOWEEKSAGO"
+		fi
         fi
 done
 
 ## TODO: clean up offloaded snapshots
-## TODO: clean up bookmarks
