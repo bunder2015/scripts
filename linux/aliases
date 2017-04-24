@@ -32,3 +32,6 @@ alias sl="cowsay -f tux 'What??? Did you mean ls?' && ls $@"
 
 # quota(1) only shows messages when exceeded if using zfs
 alias quota="/sbin/zfs get userused@$USER,userquota@$USER,refquota $HOME"
+
+# etcat -v used to be a part of gentoolkit, this shows all versions of a package
+alias etcat="equery l -o -p"
