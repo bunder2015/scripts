@@ -7,18 +7,19 @@
 # Human-readables
 alias df="df -h"
 alias du="du -h"
+alias duh="du -h --max-depth=1"
 
 # Floating point math
 alias bc="bc -l"
 
-# Nano without word-wrap
+# nano without word-wrap
 alias nano="nano -w"
+
+# grep sometimes likes to think that log files are binary
+alias grep="grep -a"
 
 # Quick shell history
 alias h="history 25"
-
-# Quick filespace check
-alias duh="du -h --max-depth=1"
 
 # Show cwd sub-directories including dot directories
 alias ldir="find -maxdepth 1 -type d -printf '\"%p\" ' | xargs ls -ld --color-auto"
@@ -27,7 +28,7 @@ alias ldir="find -maxdepth 1 -type d -printf '\"%p\" ' | xargs ls -ld --color-au
 alias top="htop"
 
 # I think this looks better than steam locomotive
-alias sl="cowsay -f tux ?? Did you mean ls "
+alias sl="cowsay -f tux 'What??? Did you mean ls?' && ls $@" 
 
 # quota(1) only shows messages when exceeded if using zfs
 alias quota="/sbin/zfs get userused@$USER,userquota@$USER,refquota $HOME"
