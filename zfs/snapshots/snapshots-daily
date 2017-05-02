@@ -33,9 +33,9 @@ for SET in $DS ; do
                 done
 
                 ## Now that all the snapshots have been created, we can think about offloading them to another pool/server
-                # zfs send -i "$POOL"/"$SET"\#weekly-"$TWOWEEKSAGO" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" | zfs receive "$LOCALPOOL"/backups/"$HOSTNAME"/"$SET"
+                # zfs send -c -i "$POOL"/"$SET"\#weekly-"$TWOWEEKSAGO" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" | zfs receive "$LOCALPOOL"/backups/"$HOSTNAME"/"$SET"
                 ## OR
-                zfs send -i "$POOL"/"$SET"\#weekly-"$TWOWEEKSAGO" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" | ssh -Cq "$REMOTEHOST" zfs receive "$REMOTEPOOL"/backups/"$HOSTNAME"/"$SET"
+                zfs send -c -i "$POOL"/"$SET"\#weekly-"$TWOWEEKSAGO" "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" | ssh -q "$REMOTEHOST" zfs receive "$REMOTEPOOL"/backups/"$HOSTNAME"/"$SET"
 
 		if [ $? -eq 0 ] ; then
 	                zfs bookmark "$POOL"/"$SET"@weekly-"$LASTWEEKWEEK" "$POOL"/"$SET"\#weekly-"$LASTWEEKWEEK"
@@ -46,5 +46,4 @@ for SET in $DS ; do
 done
 
 ## TODO: clean up offloaded snapshots
-## TODO: compressed send instead of relying on ssh compression
 ## TODO: resumable send/recv?
