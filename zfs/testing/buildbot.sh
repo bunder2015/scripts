@@ -20,8 +20,15 @@ ZFS_CHECKOUT="master"
 #https://github/user/repo/commit/a5s6d7f8.patch"
 
 cd /home/testuser
-sudo /home/testuser/zfs/scripts/zfs.sh -u
-rm -rf /home/testuser/spl /home/testuser/zfs
+if [ -f /home/testuser/zfs/scripts/zfs.sh ] ; then
+        sudo /home/testuser/zfs/scripts/zfs.sh -u
+fi
+if [ -d /home/testuser/spl ] ; then
+        rm -rf /home/testuser/spl
+fi
+if [ -d /home/testuser/zfs ] ; then
+        rm -rf /home/testuser/zfs
+fi
 
 git clone $SPL_REPO
 git clone $ZFS_REPO
