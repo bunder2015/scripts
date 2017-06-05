@@ -1,9 +1,7 @@
 #!/bin/bash
 
-while read i ; do
-        equery depends $i >> /dev/null
-        if [ $? -eq 0 ]
-                then
-                        echo $i "can be deselected"
-        fi
+while read -r i ; do
+	if equery depends "$i" >> /dev/null ; then
+		echo "$i can be deselected"
+	fi
 done < /var/lib/portage/world
