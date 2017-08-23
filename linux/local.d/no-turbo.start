@@ -2,6 +2,7 @@
 
 # This turns off Intel turbo boost because the BIOS won't let us do it in there
 until [ -e /sys/devices/system/cpu/intel_pstate/no_turbo ]; do
+        printf "Waiting for no_turbo to appear...\n"
         sleep 5
 done
 
@@ -9,5 +10,10 @@ OUTPUT=$(cat /sys/devices/system/cpu/intel_pstate/no_turbo)
 
 until [ "$OUTPUT" -eq "1" ]; do
         /bin/echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
+        if [ "$OUTPUT" -ne "1" ]; then
+                printf "Turbo did not get disabled, trying again...\n"
+                sleep 5
+        else
+                printf "Turbo should now be disabled...\n"
+        fi
 done
-
