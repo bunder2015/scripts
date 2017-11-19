@@ -1,0 +1,141 @@
+gdisk /dev/disk/by-id/mydisk
+	use gpt and wipe disk
+	create 100MB partition EF00
+	rest of disk as BF01
+
+mkfs.vfat -F32 /dev/disk/by-id/mydisk-part1
+
+zpool create -f -d \
+	-o ashift=12 \
+	-o cachefile=/tmp/zpool.cache \
+	-O normalization=formD \
+	-O atime=off \
+	-O compression=lz4 \
+	-m none \
+	-R /mnt/gentoo \
+	-o feature@async_destroy=enabled \
+	-o feature@empty_bpobj=enabled \
+	-o feature@lz4_compress=enabled \
+	-o feature@spacemap_histogram=enabled \
+	-o feature@enabled_txg=enabled \
+	-o feature@extensible_dataset=enabled \
+	-o feature@bookmarks=enabled \
+	mypool \
+	/dev/disk/by-id/mydisk-part2
+
+zfs create \
+	-o mountpoint=/ \
+	mypool/myrootds
+
+zfs create \
+	-o mountpoint=/home \
+	-o devices=off \
+	mypool/home
+
+mkdir /mnt/gentoo/var
+
+zfs create \
+	-o mountpoint=/var/log \
+	mypool/logs
+
+zfs create \
+	-o devices=off \
+	mypool/temp
+
+zfs create \
+	-o mountpoint=/tmp \
+	-o exec=off \
+	mypool/temp/tmp
+
+zfs create \
+	-o mountpoint=/var/tmp \
+	mypool/temp/vartmp
+
+zfs create \
+	-b 4K \
+	-V 4G \
+	-o compression=off \
+	-o primarycache=none \
+	-o secondarycache=none \
+	-o sync=always \
+	-o logbias=throughput \
+	mypool/swap
+
+mkswap /dev/zvol/mypool/swap; swapon /dev/zvol/mypool/swap
+
+zpool set bootfs=mypool/myrootds mypool
+
+cd /mnt/gentoo
+
+mkdir boot
+mkdir boot/efi
+mount /dev/disk/by-id/mydisk-part1 boot/efi
+
+cd /mnt/gentoo
+
+wget stage3 tarball, unpack
+
+mount --rbind /dev dev
+mount --rbind /sys sys
+mount -t proc none proc
+
+cp /etc/resolv.conf etc
+mkdir etc
+mkdir etc/zfs
+cp /tmp/zpool.cache etc/zfs
+
+mount nfs /usr/portage and distfiles
+
+chroot /mnt/gentoo /bin/bash
+env-update
+source /etc/profile
+
+install cpuid2cpuflags
+
+update make.conf
+update repos.conf
+mask systemd udev pulseaudio
+choose profile
+
+set timezone
+set locale
+update world
+
+install gentoo-sources dracut linux-firmware intel-microcode iucode-tool hwids dmidecode pciutils usbutils dosfstools sysfsutils efibootmgr
+modify savedconfig for linux-firmware and intel-microcode and reinstall
+
+compile kernel without initramfs embedding
+make @zfs portage set
+install @zfs
+run dracut
+compile kernel with initramfs embedding
+install kernel and adjust efi settings
+
+fstab
+hostname
+domainname
+hosts file
+
+install netifrc
+
+rc.conf
+hwclock
+
+install sysklogd dcron dhcpcd nfs-utils ntp ssmtp
+enable ssh
+
+install genlop gentoolkit 
+install bind-tools whois 
+install htop strace lsof fuser dstat iotop iftop perf
+install gptfdisk smartmontools hddtemp
+install tmux ssmtp mcelog alsa-utils htop
+
+
+set root password
+add user account
+exit chroot
+unmount and export
+reboot
+
+install xorg mate slim firefox thunderbird conky dconf-editor libreoffice galculator corefonts dejavu roboto
+optionally install vlc audacity spotify obs-studio vice kicad discord-bin youtube-dl ghex gimp conky
