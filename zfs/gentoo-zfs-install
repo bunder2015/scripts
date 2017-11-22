@@ -1,3 +1,5 @@
+sysresccd+zfs boot
+
 gdisk /dev/disk/by-id/mydisk
 	use gpt and wipe disk
 	create 100MB partition EF00
@@ -71,8 +73,6 @@ mkdir boot
 mkdir boot/efi
 mount /dev/disk/by-id/mydisk-part1 boot/efi
 
-cd /mnt/gentoo
-
 wget stage3 tarball, unpack
 
 mount --rbind /dev dev
@@ -107,16 +107,16 @@ modify savedconfig for linux-firmware and intel-microcode and reinstall
 compile kernel without initramfs embedding
 make @zfs portage set
 install @zfs
-run dracut
+dracut --kver --hostonly --nocompress
 compile kernel with initramfs embedding
 install kernel and adjust efi settings
 
 fstab
+
+install netifrc
 hostname
 domainname
 hosts file
-
-install netifrc
 
 rc.conf
 hwclock
