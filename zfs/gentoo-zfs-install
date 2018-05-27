@@ -101,7 +101,7 @@ set timezone
 set locale
 update world
 
-install gentoo-sources dracut linux-firmware intel-microcode iucode-tool hwids dmidecode pciutils usbutils dosfstools sysfsutils efibootmgr
+install gentoo-sources dracut linux-firmware intel-microcode iucode_tool hwids lshw dmidecode pciutils usbutils dosfstools sysfsutils efibootmgr
 modify savedconfig for linux-firmware and intel-microcode and reinstall
 
 compile kernel without initramfs embedding
@@ -113,9 +113,7 @@ install kernel and adjust efi settings
 
 fstab
 
-install netifrc
 hostname
-domainname
 hosts file
 
 rc.conf
@@ -126,9 +124,9 @@ enable ssh
 
 install genlop gentoolkit 
 install bind-tools whois 
-install htop strace lsof fuser dstat iotop iftop perf
+install htop strace lsof dstat iotop iftop perf
 install gptfdisk smartmontools hddtemp
-install tmux ssmtp mcelog alsa-utils htop
+install tmux mcelog alsa-utils htop
 
 
 set root password
@@ -137,5 +135,5 @@ exit chroot
 unmount and export
 reboot
 
-install xorg mate slim firefox thunderbird conky dconf-editor libreoffice galculator corefonts dejavu roboto
+install xorg-server mate slim firefox thunderbird conky dconf-editor libreoffice galculator corefonts dejavu roboto
 optionally install vlc audacity spotify obs-studio vice kicad discord-bin youtube-dl ghex gimp conky
