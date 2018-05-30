@@ -4,7 +4,7 @@
 # runfile is optional, uses stock linux.run otherwise
 
 # Drop caches
-sudo /home/testuser/dropcaches.sh
+sudo echo 1 > /proc/sys/vm/drop_caches
 
 # Load modules
 sudo /home/testuser/zfs/scripts/zfs.sh
@@ -23,4 +23,4 @@ grep -a -e KILLED -e FAIL /var/tmp/test_results/current/log
 sudo /home/testuser/zfs/scripts/zfs.sh -u
 
 # Drop caches
-sudo /home/testuser/dropcaches.sh
+sudo echo 1 > /proc/sys/vm/drop_caches
