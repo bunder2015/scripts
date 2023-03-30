@@ -3,6 +3,7 @@
 # Weekly ZFS incremental snapshot offload script (pull)
 # Takes a snapshot from a remote machine and stores it to the local pool
 # Note: in order for this script to work, an initial full pull must be manually performed
+# Note: requires user on both ends with sudo privileges
 
 # Remote system (aka source)
 RHOST="remotehost"

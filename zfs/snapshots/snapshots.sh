@@ -3,6 +3,7 @@
 # Hourly / Daily / Weekly ZFS snapshot script
 # Keeps 24 hours of hourly snapshots, 7 days of daily snapshots
 # Weekly snapshots get removed by offload-pull.sh from remote server
+# Note: requires user with sudo privileges
 
 # Set POOL/DS as needed
 POOL="mypool"
@@ -40,8 +41,8 @@ for SET in $DS ; do
 	else
 		# Hourly
 		if [ "$VERBOSE" -eq "1" ] ; then echo "zfs snapshot $POOL/$SET@hourly-$HOURTODAY" ; fi
-		zfs snapshot "$POOL"/"$SET"@hourly-"$HOURTODAY"
+		sudo zfs snapshot "$POOL"/"$SET"@hourly-"$HOURTODAY"
 		if [ "$VERBOSE" -eq "1" ] ; then echo "zfs destroy $POOL/$SET@hourly-$HOURYESTERDAY" ; fi
-		zfs destroy "$POOL"/"$SET"@hourly-"$HOURYESTERDAY"
+		sudo zfs destroy "$POOL"/"$SET"@hourly-"$HOURYESTERDAY"
 	fi
 done
