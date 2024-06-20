@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # testbot.sh [runfile]
 # runfile is optional, uses stock linux.run otherwise

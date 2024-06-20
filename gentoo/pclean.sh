@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 if [ -z "$1" ] ; then
 	echo "Help: pclean.sh (env|keywords|unmask|use)"
 	exit 1

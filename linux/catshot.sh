@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # screenshot concatenator
 # Dave Foster (@daf)

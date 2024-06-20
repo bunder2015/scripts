@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Disable relatime=temporary on pool rootfs
 ROOTFS=$(zpool get -o value -H bootfs)

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Weekly ZFS incremental snapshot offload script (pull)
 # Takes a snapshot from a remote machine and stores it to the local pool

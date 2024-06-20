@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Hourly / Daily / Weekly ZFS snapshot script
 # Keeps 24 hours of hourly snapshots, 7 days of daily snapshots

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 PARTS=$(grep "/boot/efi" /etc/fstab | awk '{print $1}' | cut -d'#' -f2)
 
